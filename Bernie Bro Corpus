@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+import sys,getopt,datetime,codecs
+from datetime import date, timedelta
+edate = date(2019, 10, 1)   # start date
+sdate = date(2018, 10, 1)   # end date
+query = 'atmospheric chemistry'
+maxtweets = 1000
+toptweet=False
+outputFileName = 'myoutput.csv'
+delta = edate - sdate       # as timedelta
+dates = [(sdate + timedelta(days=i)) for i in range(delta.days + 1)]
+if sys.version_info[0] < 3:
+    import got
+else:
+    import got3 as got
+def main():
+try:
+tweetCriteria = got.manager.TweetCriteria()
+tweetCriteria.querySearch = query
+        tweetCriteria.topTweets = toptweet
+        tweetCriteria.maxTweets = maxtweets
+outputFile = codecs.open(outputFileName, "w+", "utf-8")
+def receiveBuffer(tweets):
+            for t in tweets:
+                outputFile.write('\n%s'% t.text)
+            outputFile.flush()
+for dt in dates:
+            print (dt)
+            tweetCriteria.since = str(dt)
+            tweetCriteria.until = str(dt + timedelta(days=1))
+got.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer)
+except arg:
+        print('Arguments parser error, try -h' + arg)
+   finally:
+        outputFile.close()
+        print('Done. Output file generated "%s".' % outputFileName)
+if __name__ == '__main__':
+   main()
